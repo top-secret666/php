@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: theater_full
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,12 +29,24 @@ jobs:
       - name: Install composer dependencies
         run: composer install --no-progress --no-interaction --prefer-dist
 
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          mkdir -p database
+          touch database/database.sqlite
+
       - name: Generate app key
         run: php artisan key:generate --ansi
 
       - name: Run tests
         env:
           APP_ENV: testing
+          APP_DEBUG: true
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+          CACHE_DRIVER: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
         run: |
-          php artisan migrate:fresh --seed
-          vendor/bin/phpunit --colors=always
+          php artisan migrate:fresh --seed --force
+          php artisan test --colors=always
