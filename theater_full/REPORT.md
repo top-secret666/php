@@ -527,6 +527,29 @@ $show = Show::create($request->validated());
 
 ---
 
+## Проверка соответствия требованиям задания
+
+| Требование | Реализация в проекте |
+|---|---|
+| Laravel 12.x+, PHP 8.1+ | Laravel 12.x в каталоге `theater_full/`, PHP 8.2 в CI (`.github/workflows/ci.yml`). |
+| Не менее 3 связанных моделей | `Show`, `Performance`, `Ticket`, `Order`, `Venue` и др. Связи: `Show->performances()`, `Ticket->performance()`, `Order->tickets()` и т.д. |
+| Миграции для таблиц | `theater_full/database/migrations/*` (создание `shows`, `performances`, `tickets`, `orders` и др.). |
+| Отношения Eloquent | `theater_full/app/Models/*.php` (`hasMany`, `belongsTo`, `belongsToMany`). |
+| Resource‑контроллеры | `Route::resource(...)` в `theater_full/routes/web.php` для шоу/сеансов/билетов/заказов. |
+| Доп. контроллеры/логика | `TicketController` — продажа/QR/статусы, статистика; `AdminMiddleware` — доступ администратора. |
+| Представления CRUD | `theater_full/resources/views/*` (например, `shows/*`, `orders/*`, `tickets/*`). |
+| Макет (layout) | `theater_full/resources/views/layouts/app.blade.php`. |
+| Blade‑компоненты | `theater_full/resources/views/components/*` (используются для переиспользуемых UI‑фрагментов). |
+| Формы создания/редактирования | `theater_full/resources/views/shows/create.blade.php`, `edit.blade.php` и аналоги для сущностей. |
+| Серверная валидация | FormRequest: `theater_full/app/Http/Requests/*` (например, `StoreShowRequest`). |
+| Отображение ошибок | В формах используется `@error(...)` и `invalid-feedback` (Bootstrap‑паттерн). |
+| Коллекции | Пример: построение списка режиссёров для фильтра — `ShowController::getFilteredShows()` (работа с `Collection`). |
+| Поиск/фильтрация/сортировка | Афиша: `theater_full/resources/views/shows/index.blade.php` + `ShowController` (параметры `q`, `director`, `sort`, `dir`). |
+| Пагинация | `paginate(15)` в контроллерах и `{{ $paginator->links() }}` во view (например, афиша). |
+| Аутентификация | Логин/регистрация (контроллеры в `theater_full/app/Http/Controllers/Auth/*`, маршруты в `theater_full/routes/web.php`). |
+| Авторизация/разграничение | `AdminMiddleware` + защищённые маршруты `admin/*`. |
+| Загрузка файлов | Постер спектакля: формы `shows/create|edit` + обработка в `ShowController` (сохранение в `public` disk). |
+
 ## Тестирование и результаты
 
 **Подход:**

@@ -37,7 +37,7 @@
     </section>
 
     <main class="container my-5">
-        @include('partials.messages')
+        <x-alerts />
         @yield('content')
     </main>
 
