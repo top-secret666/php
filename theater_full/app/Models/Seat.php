@@ -9,15 +9,15 @@ class Seat extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['seat_section_id', 'label', 'row', 'number', 'attributes'];
+    protected $fillable = ['section_id', 'row', 'number', 'seat_type', 'is_active'];
 
     protected $casts = [
-        'attributes' => 'array',
+        'is_active' => 'boolean',
     ];
 
     public function section()
     {
-        return $this->belongsTo(SeatSection::class, 'seat_section_id');
+        return $this->belongsTo(SeatSection::class, 'section_id');
     }
 
     public function tickets()

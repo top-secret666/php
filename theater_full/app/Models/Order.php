@@ -9,10 +9,10 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id','status','total_cents','currency','placed_at'];
+    protected $fillable = ['user_id','status','total_amount'];
 
     protected $casts = [
-        'placed_at' => 'datetime',
+        'total_amount' => 'decimal:2',
     ];
 
     public function user()
