@@ -10,7 +10,7 @@ class Show extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title', 'description', 'duration_minutes', 'language', 'age_rating', 'venue_id'
+        'title', 'director', 'description', 'duration_minutes', 'language', 'age_rating', 'venue_id', 'poster_url', 'status'
     ];
 
     public function venue()

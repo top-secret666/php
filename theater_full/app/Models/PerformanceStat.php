@@ -9,12 +9,13 @@ class PerformanceStat extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['performance_id','sold_tickets','revenue_cents','attendance_percentage'];
+    protected $fillable = ['performance_id','date_calculated','tickets_sold','revenue','checked_in_count'];
 
     protected $casts = [
-        'sold_tickets' => 'integer',
-        'revenue_cents' => 'integer',
-        'attendance_percentage' => 'float',
+        'date_calculated' => 'date',
+        'tickets_sold' => 'integer',
+        'checked_in_count' => 'integer',
+        'revenue' => 'decimal:2',
     ];
 
     public function performance()

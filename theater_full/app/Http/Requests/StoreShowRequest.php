@@ -16,6 +16,7 @@ class StoreShowRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
+            'director' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'duration_minutes' => 'nullable|integer|min:0',
             'language' => 'nullable|string|max:10',

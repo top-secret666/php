@@ -18,6 +18,12 @@
             @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
+        <div class="mb-3">
+            <label for="director" class="form-label">Режиссёр</label>
+            <input type="text" class="form-control @error('director') is-invalid @enderror" id="director" name="director" value="{{ old('director') }}">
+            @error('director') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
         <div class="row">
             <div class="col-md-4 mb-3">
                 <label for="duration_minutes" class="form-label">Длительность (мин)</label>

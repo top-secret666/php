@@ -8,6 +8,9 @@
             <img src="{{ $show->poster_url ?? '/images/poster-placeholder.jpg' }}" class="img-fluid rounded mb-3" alt="{{ $show->title }}">
             <h1>{{ $show->title }}</h1>
             <p class="text-muted">{{ $show->duration_minutes }} мин • {{ $show->language ?? '—' }}</p>
+            @if($show->director)
+                <p class="text-muted">Режиссёр: {{ $show->director }}</p>
+            @endif
             <p>{{ $show->description }}</p>
         </div>
         <div class="col-md-4">
