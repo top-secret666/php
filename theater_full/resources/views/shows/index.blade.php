@@ -8,6 +8,54 @@
         <a href="{{ route('shows.create') }}" class="btn btn-outline-light">Добавить спектакль</a>
     </div>
 
+    <form method="GET" action="{{ route('shows.search') }}" class="row g-2 align-items-end mb-4">
+        <div class="col-12 col-md-5">
+            <label class="form-label text-muted small mb-1">Поиск</label>
+            <input
+                type="text"
+                name="q"
+                value="{{ request('q') }}"
+                class="form-control"
+                placeholder="Название / описание / режиссёр"
+            />
+        </div>
+
+        <div class="col-12 col-md-3">
+            <label class="form-label text-muted small mb-1">Режиссёр</label>
+            <select name="director" class="form-select">
+                <option value="">Все</option>
+                @foreach(($directors ?? collect()) as $d)
+                    <option value="{{ $d }}" @selected(request('director') === $d)>{{ $d }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-6 col-md-2">
+            <label class="form-label text-muted small mb-1">Сортировка</label>
+            <select name="sort" class="form-select">
+                <option value="title" @selected(request('sort', 'title') === 'title')>Название</option>
+                <option value="duration_minutes" @selected(request('sort') === 'duration_minutes')>Длительность</option>
+                <option value="created_at" @selected(request('sort') === 'created_at')>Создано</option>
+            </select>
+        </div>
+
+        <div class="col-6 col-md-1">
+            <label class="form-label text-muted small mb-1">Напр.</label>
+            <select name="dir" class="form-select">
+                <option value="asc" @selected(request('dir', 'asc') === 'asc')>↑</option>
+                <option value="desc" @selected(request('dir') === 'desc')>↓</option>
+            </select>
+        </div>
+
+        <div class="col-12 col-md-1 d-grid">
+            <button class="btn btn-primary" type="submit">OK</button>
+        </div>
+
+        <div class="col-12">
+            <a class="link-light small" href="{{ route('shows.index') }}">Сбросить фильтры</a>
+        </div>
+    </form>
+
     <div class="row g-3">
         @foreach($shows as $show)
             <div class="col-6 col-md-4 col-lg-3">

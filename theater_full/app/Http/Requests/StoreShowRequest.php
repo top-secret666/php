@@ -22,6 +22,8 @@ class StoreShowRequest extends FormRequest
             'language' => 'nullable|string|max:10',
             'age_rating' => 'nullable|string|max:10',
             'venue_id' => 'nullable|integer|exists:venues,id',
+            'poster_url' => 'nullable|string|max:2048',
+            'poster' => 'nullable|image|max:4096',
         ];
     }
 }

@@ -4,7 +4,7 @@
 
 @section('content')
     <h2>Редактировать спектакль</h2>
-    <form method="POST" action="{{ route('shows.update', $show) }}">
+    <form method="POST" action="{{ route('shows.update', $show) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="mb-3">
@@ -23,6 +23,18 @@
             <label for="director" class="form-label">Режиссёр</label>
             <input type="text" class="form-control @error('director') is-invalid @enderror" id="director" name="director" value="{{ old('director', $show->director) }}">
             @error('director') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="poster" class="form-label">Постер (изображение)</label>
+            @if($show->poster_url)
+                <div class="mb-2">
+                    <img src="{{ $show->poster_url }}" alt="{{ $show->title }}" style="max-width: 220px; height: auto; border-radius: 12px;" />
+                </div>
+            @endif
+            <input type="file" class="form-control @error('poster') is-invalid @enderror" id="poster" name="poster" accept="image/*">
+            @error('poster') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            <div class="form-text">Если загрузить новый файл — он заменит текущий постер.</div>
         </div>
 
         <div class="row">

@@ -17,8 +17,8 @@ use App\Http\Controllers\BookController;
 Route::resource('books', BookController::class);
 Route::get('/books/search', [BookController::class, 'search'])->name('books.search');
 
-Route::resource('shows', ShowController::class);
 Route::get('/shows/search', [ShowController::class, 'search'])->name('shows.search');
+Route::resource('shows', ShowController::class);
 
 Route::resource('performances', PerformanceController::class);
 Route::resource('tickets', TicketController::class);

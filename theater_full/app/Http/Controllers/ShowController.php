@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Show;
 use App\Http\Requests\StoreShowRequest;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ShowController extends Controller
 {
@@ -18,8 +19,8 @@ class ShowController extends Controller
     }
     public function index(Request $request)
     {
-        $shows = Show::with('venue')->paginate(15);
-        return view('shows.index', compact('shows'));
+        [$shows, $directors] = $this->getFilteredShows($request);
+        return view('shows.index', compact('shows', 'directors'));
     }
 
     public function create()
@@ -30,6 +31,11 @@ class ShowController extends Controller
     public function store(StoreShowRequest $request)
     {
         $data = $request->validated();
+
+        if ($request->hasFile('poster')) {
+            $path = $request->file('poster')->store('posters', 'public');
+            $data['poster_url'] = Storage::url($path);
+        }
 
         $show = Show::create($data);
         return redirect()->route('shows.show', $show);
@@ -49,6 +55,11 @@ class ShowController extends Controller
     {
         $data = $request->validated();
 
+        if ($request->hasFile('poster')) {
+            $path = $request->file('poster')->store('posters', 'public');
+            $data['poster_url'] = Storage::url($path);
+        }
+
         $show->update($data);
         return redirect()->route('shows.show', $show);
     }
@@ -61,8 +72,55 @@ class ShowController extends Controller
 
     public function search(Request $request)
     {
-        $q = $request->get('q');
-        $shows = Show::where('title', 'ilike', "%{$q}%")->paginate(15);
-        return view('shows.index', compact('shows'));
+        // Keep /shows/search for UI, but share the same logic as the index.
+        return $this->index($request);
+    }
+
+    /**
+     * @return array{0:\Illuminate\Contracts\Pagination\LengthAwarePaginator, 1:\Illuminate\Support\Collection<int, string>}
+     */
+    protected function getFilteredShows(Request $request): array
+    {
+        $q = trim((string) $request->get('q', ''));
+        $director = trim((string) $request->get('director', ''));
+
+        $sort = (string) $request->get('sort', 'title');
+        $dir = strtolower((string) $request->get('dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+        $allowedSorts = ['title', 'duration_minutes', 'created_at'];
+        if (!in_array($sort, $allowedSorts, true)) {
+            $sort = 'title';
+        }
+
+        $query = Show::query()->with('venue');
+
+        if ($q !== '') {
+            $query->where(function (Builder $inner) use ($q) {
+                $inner
+                    ->where('title', 'like', "%{$q}%")
+                    ->orWhere('description', 'like', "%{$q}%")
+                    ->orWhere('director', 'like', "%{$q}%");
+            });
+        }
+
+        if ($director !== '') {
+            $query->where('director', $director);
+        }
+
+        $shows = $query
+            ->orderBy($sort, $dir)
+            ->paginate(15)
+            ->appends($request->query());
+
+        // Collections usage (requirement): build filter options as a Collection.
+        $directors = Show::query()
+            ->select('director')
+            ->whereNotNull('director')
+            ->where('director', '!=', '')
+            ->distinct()
+            ->orderBy('director')
+            ->pluck('director')
+            ->values();
+
+        return [$shows, $directors];
     }
 }
