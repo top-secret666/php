@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Http\Requests\StoreOrderRequest;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -18,13 +19,9 @@ class OrderController extends Controller
         return view('orders.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreOrderRequest $request)
     {
-        $data = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'total_amount' => 'required|numeric|min:0',
-            'status' => 'nullable|string',
-        ]);
+        $data = $request->validated();
 
         $order = Order::create($data);
         return redirect()->route('orders.show', $order);
@@ -40,13 +37,9 @@ class OrderController extends Controller
         return view('orders.edit', compact('order'));
     }
 
-    public function update(Request $request, Order $order)
+    public function update(StoreOrderRequest $request, Order $order)
     {
-        $data = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'total_amount' => 'required|numeric|min:0',
-            'status' => 'nullable|string',
-        ]);
+        $data = $request->validated();
 
         $order->update($data);
         return redirect()->route('orders.show', $order);

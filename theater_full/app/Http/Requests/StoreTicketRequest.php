@@ -22,6 +22,7 @@ class StoreTicketRequest extends FormRequest
             'order_id' => 'nullable|exists:orders,id',
             'status' => 'nullable|in:reserved,sold,cancelled',
             'qr_code' => 'nullable|string',
+            'checked_in_at' => 'nullable|date',
         ];
     }
 }

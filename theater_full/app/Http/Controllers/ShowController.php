@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Show;
+use App\Http\Requests\StoreShowRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,16 +27,9 @@ class ShowController extends Controller
         return view('shows.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreShowRequest $request)
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'duration_minutes' => 'nullable|integer|min:0',
-            'language' => 'nullable|string|max:10',
-            'age_rating' => 'nullable|string|max:10',
-            'venue_id' => 'nullable|integer|exists:venues,id',
-        ]);
+        $data = $request->validated();
 
         $show = Show::create($data);
         return redirect()->route('shows.show', $show);
@@ -51,16 +45,9 @@ class ShowController extends Controller
         return view('shows.edit', compact('show'));
     }
 
-    public function update(Request $request, Show $show)
+    public function update(StoreShowRequest $request, Show $show)
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'duration_minutes' => 'nullable|integer|min:0',
-            'language' => 'nullable|string|max:10',
-            'age_rating' => 'nullable|string|max:10',
-            'venue_id' => 'nullable|integer|exists:venues,id',
-        ]);
+        $data = $request->validated();
 
         $show->update($data);
         return redirect()->route('shows.show', $show);
