@@ -1,0 +1,48 @@
+<?php
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\{Show, Performance};
+use Illuminate\Support\Carbon;
+
+class PerformanceUpdateDeleteTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_can_update_performance()
+    {
+        $show = Show::factory()->create();
+        $performance = Performance::factory()->create([
+            'show_id' => $show->id,
+            'status' => 'scheduled',
+        ]);
+
+        $newStart = Carbon::now()->addDays(2);
+
+        $response = $this->put(route('performances.update', $performance), [
+            'show_id' => $show->id,
+            'starts_at' => $newStart->toDateTimeString(),
+            'status' => 'cancelled',
+        ]);
+
+        $response->assertStatus(302);
+
+        $performance->refresh();
+        $this->assertEquals('cancelled', $performance->status);
+    }
+
+    public function test_can_delete_performance()
+    {
+        $performance = Performance::factory()->create();
+
+        $response = $this->delete(route('performances.destroy', $performance));
+
+        $response->assertStatus(302);
+
+        $this->assertDatabaseMissing('performances', [
+            'id' => $performance->id,
+        ]);
+    }
+}
