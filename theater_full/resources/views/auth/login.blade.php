@@ -4,10 +4,11 @@
 
 @section('content')
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-6 col-lg-5">
             <div class="card bg-dark text-light">
                 <div class="card-body">
-                    <h3 class="mb-3">Вход</h3>
+                    <h3 class="mb-1">Вход</h3>
+                    <div class="text-muted mb-3">Добро пожаловать обратно.</div>
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
@@ -28,8 +29,12 @@
                             <label class="form-check-label" for="remember">Запомнить меня</label>
                         </div>
 
-                        <button type="submit" class="btn badge-accent text-white">Войти</button>
+                        <button type="submit" class="btn btn-accent">Войти</button>
                         <a class="btn btn-link text-white ms-2" href="{{ route('password.request') }}">Забыли пароль?</a>
+
+                        <div class="text-muted small mt-3">
+                            Нет аккаунта? <a href="{{ route('register') }}" class="text-white">Зарегистрируйтесь</a>.
+                        </div>
                     </form>
                 </div>
             </div>

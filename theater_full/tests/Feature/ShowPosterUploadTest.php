@@ -25,6 +25,7 @@ class ShowPosterUploadTest extends TestCase
             'name' => 'Uploader',
             'email' => 'uploader+' . time() . '@example.test',
             'password' => Hash::make('password'),
+            'is_admin' => true,
         ]);
 
         $venue = Venue::first();

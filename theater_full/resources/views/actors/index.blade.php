@@ -5,9 +5,9 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="h4">Актёры</h2>
-        @auth
+        @if(auth()->check() && auth()->user()->is_admin)
             <a href="{{ route('actors.create') }}" class="btn btn-outline-light">Добавить актёра</a>
-        @endauth
+        @endif
     </div>
 
     <form method="GET" action="{{ route('actors.index') }}" class="row g-2 align-items-end mb-4">

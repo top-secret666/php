@@ -30,6 +30,19 @@ class ShowCreateAccessTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)->get('/shows/create');
+        $response->assertStatus(403);
+    }
+
+    public function test_admin_can_access_create_form()
+    {
+        $admin = User::create([
+            'name' => 'Admin',
+            'email' => 'admin+' . time() . '@example.test',
+            'password' => Hash::make('password'),
+            'is_admin' => true,
+        ]);
+
+        $response = $this->actingAs($admin)->get('/shows/create');
         $response->assertStatus(200);
     }
 }

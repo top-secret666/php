@@ -5,7 +5,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="h4">Билеты</h2>
-        <a href="{{ route('tickets.create') }}" class="btn btn-outline-light">Создать билет</a>
+        <a href="{{ route('tickets.create') }}" class="btn btn-outline-light">Купить билет</a>
     </div>
 
     <div class="list-group">

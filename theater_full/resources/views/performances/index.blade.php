@@ -5,7 +5,9 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="h4">Показы</h2>
-        <a href="{{ route('performances.create') }}" class="btn btn-outline-light">Добавить показ</a>
+        @if(auth()->check() && auth()->user()->is_admin)
+            <a href="{{ route('performances.create') }}" class="btn btn-outline-light">Добавить показ</a>
+        @endif
     </div>
 
     <div class="list-group">
@@ -15,7 +17,7 @@
                     <h5 class="mb-1">{{ $performance->show->title ?? '—' }}</h5>
                     <small class="text-muted">{{ $performance->starts_at->format('d.m.Y H:i') }}</small>
                 </div>
-                <p class="mb-1 text-muted">{{ Str::limit($performance->notes, 120) }}</p>
+                <p class="mb-1 text-muted">{{ \Illuminate\Support\Str::limit((string) $performance->notes, 120) }}</p>
             </a>
         @endforeach
     </div>

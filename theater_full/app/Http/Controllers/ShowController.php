@@ -12,8 +12,10 @@ class ShowController extends Controller
 {
     public function __construct()
     {
-        // allow guests to view index/show/search, require auth for creating/updating/deleting
+        // allow guests to view index/show/search
+        // require auth+admin for creating/updating/deleting
         $this->middleware('auth')->except(['index', 'show', 'search']);
+        $this->middleware('admin')->except(['index', 'show', 'search']);
         // Note: policy registration may not be available in this lightweight bootstrap.
         // Skipping authorizeResource to avoid accidental 403 for guests on index/show.
     }

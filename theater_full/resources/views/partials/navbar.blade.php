@@ -10,14 +10,21 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('shows.index') }}">Спектакли</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('actors.index') }}">Актёры</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('performances.index') }}">Показы</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('tickets.index') }}">Билеты</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('orders.index') }}">Заказы</a></li>
+                @auth
+                    @if(Auth::user()->is_admin)
+                        <li class="nav-item"><a class="nav-link" href="{{ route('tickets.index') }}">Билеты</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('orders.index') }}">Заказы</a></li>
+                    @else
+                        <li class="nav-item"><a class="nav-link" href="{{ route('cart.index') }}">Корзина</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('orders.index') }}">Мои заказы</a></li>
+                    @endif
+                @endauth
             </ul>
 
             <ul class="navbar-nav ms-auto">
                 @guest
                         <li class="nav-item"><a class="btn btn-outline-light me-2" href="{{ route('login') }}">Войти</a></li>
-                        <li class="nav-item"><a class="btn btn-outline-light me-2" href="{{ route('register') }}">Регистрация</a></li>
+                        <li class="nav-item"><a class="btn btn-accent" href="{{ route('register') }}">Регистрация</a></li>
                     @else
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">{{ Auth::user()->name }}</a>

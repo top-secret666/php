@@ -5,7 +5,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="h4 mb-0">{{ $actor->full_name }}</h2>
-        @auth
+        @if(auth()->check() && auth()->user()->is_admin)
             <div class="d-flex gap-2">
                 <a class="btn btn-outline-light" href="{{ route('actors.edit', $actor) }}">Редактировать</a>
                 <form method="POST" action="{{ route('actors.destroy', $actor) }}" onsubmit="return confirm('Удалить актёра?')">
@@ -14,7 +14,7 @@
                     <button class="btn btn-outline-danger" type="submit">Удалить</button>
                 </form>
             </div>
-        @endauth
+        @endif
     </div>
 
     @if($actor->birth_date)

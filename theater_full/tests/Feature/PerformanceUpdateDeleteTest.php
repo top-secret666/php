@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\{Show, Performance};
+use App\Models\{Show, Performance, User};
 use Illuminate\Support\Carbon;
 
 class PerformanceUpdateDeleteTest extends TestCase
@@ -13,6 +13,7 @@ class PerformanceUpdateDeleteTest extends TestCase
 
     public function test_can_update_performance()
     {
+        $admin = User::factory()->create(['is_admin' => true]);
         $show = Show::factory()->create();
         $performance = Performance::factory()->create([
             'show_id' => $show->id,
@@ -21,7 +22,7 @@ class PerformanceUpdateDeleteTest extends TestCase
 
         $newStart = Carbon::now()->addDays(2);
 
-        $response = $this->put(route('performances.update', $performance), [
+        $response = $this->actingAs($admin)->put(route('performances.update', $performance), [
             'show_id' => $show->id,
             'starts_at' => $newStart->toDateTimeString(),
             'status' => 'cancelled',
@@ -35,9 +36,10 @@ class PerformanceUpdateDeleteTest extends TestCase
 
     public function test_can_delete_performance()
     {
+        $admin = User::factory()->create(['is_admin' => true]);
         $performance = Performance::factory()->create();
 
-        $response = $this->delete(route('performances.destroy', $performance));
+        $response = $this->actingAs($admin)->delete(route('performances.destroy', $performance));
 
         $response->assertStatus(302);
 

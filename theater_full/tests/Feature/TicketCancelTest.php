@@ -16,6 +16,7 @@ class TicketCancelTest extends TestCase
         $ticket = Ticket::factory()->create([
             'status' => 'reserved',
             'qr_code' => null,
+            'purchaser_id' => $user->id,
         ]);
 
         $response = $this->actingAs($user)->put(route('tickets.update', $ticket), [

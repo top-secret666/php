@@ -35,6 +35,7 @@ class ActorsCrudTest extends TestCase
             'name' => 'Actor Admin',
             'email' => 'actor-admin+' . time() . '@example.test',
             'password' => Hash::make('password'),
+            'is_admin' => true,
         ]);
 
         $show = Show::first();

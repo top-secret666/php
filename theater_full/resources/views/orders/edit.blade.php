@@ -1,0 +1,53 @@
+@extends('layouts.app')
+
+@section('title', 'Редактировать заказ #' . $order->id)
+
+@section('content')
+    <h2 class="h4 mb-3">Редактировать заказ #{{ $order->id }}</h2>
+
+    <form method="POST" action="{{ route('orders.update', $order) }}">
+        @csrf
+        @method('PUT')
+
+        @if(auth()->user()?->is_admin)
+            <div class="mb-3">
+                <label for="user_id" class="form-label">Пользователь</label>
+                <select name="user_id" id="user_id" class="form-select @error('user_id') is-invalid @enderror">
+                    <option value="">-- выбрать --</option>
+                    @foreach(\App\Models\User::query()->orderBy('name')->get() as $user)
+                        <option value="{{ $user->id }}" {{ (string)old('user_id', $order->user_id) === (string)$user->id ? 'selected' : '' }}>
+                            {{ $user->name }} ({{ $user->email }})
+                        </option>
+                    @endforeach
+                </select>
+                @error('user_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+        @else
+            <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+            <div class="text-muted small mb-3">Заказ принадлежит вашему аккаунту и не может быть переназначен.</div>
+        @endif
+
+        <div class="mb-3">
+            <label for="total_amount" class="form-label">Сумма</label>
+            <input
+                type="number"
+                step="0.01"
+                min="0"
+                class="form-control @error('total_amount') is-invalid @enderror"
+                id="total_amount"
+                name="total_amount"
+                value="{{ old('total_amount', (string)($order->total_amount ?? 0)) }}"
+            >
+            @error('total_amount') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="status" class="form-label">Статус</label>
+            <input type="text" class="form-control @error('status') is-invalid @enderror" id="status" name="status" value="{{ old('status', $order->status ?? 'pending') }}">
+            @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        <button class="btn badge-accent text-white" type="submit">Сохранить</button>
+        <a class="btn btn-outline-light" href="{{ route('orders.show', $order) }}">Отмена</a>
+    </form>
+@endsection

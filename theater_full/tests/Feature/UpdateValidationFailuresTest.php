@@ -10,12 +10,17 @@ class UpdateValidationFailuresTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function makeAdmin(): User
+    {
+        return User::factory()->create(['is_admin' => true]);
+    }
+
     public function test_show_update_requires_title()
     {
-        $user = User::factory()->create();
+        $admin = $this->makeAdmin();
         $show = Show::factory()->create();
 
-        $response = $this->actingAs($user)->put(route('shows.update', $show), [
+        $response = $this->actingAs($admin)->put(route('shows.update', $show), [
             'title' => '',
         ]);
 
@@ -26,7 +31,7 @@ class UpdateValidationFailuresTest extends TestCase
     public function test_order_update_requires_total_amount()
     {
         $user = User::factory()->create();
-        $order = Order::factory()->create();
+        $order = Order::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->put(route('orders.update', $order), [
             'user_id' => $user->id,
@@ -41,7 +46,9 @@ class UpdateValidationFailuresTest extends TestCase
     {
         $performance = Performance::factory()->create();
 
-        $response = $this->put(route('performances.update', $performance), [
+        $admin = $this->makeAdmin();
+
+        $response = $this->actingAs($admin)->put(route('performances.update', $performance), [
             'show_id' => null,
         ]);
 
@@ -51,9 +58,10 @@ class UpdateValidationFailuresTest extends TestCase
 
     public function test_ticket_update_requires_performance_and_seat()
     {
-        $ticket = Ticket::factory()->create();
+        $user = User::factory()->create();
+        $ticket = Ticket::factory()->create(['purchaser_id' => $user->id]);
 
-        $response = $this->put(route('tickets.update', $ticket), [
+        $response = $this->actingAs($user)->put(route('tickets.update', $ticket), [
             'performance_id' => null,
             'seat_id' => null,
         ]);

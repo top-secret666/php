@@ -8,6 +8,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\CartController;
 
 Route::get('/', function () {
     return redirect()->route('shows.index');
@@ -26,6 +27,11 @@ Route::resource('actors', ActorController::class);
 Route::resource('performances', PerformanceController::class);
 Route::resource('tickets', TicketController::class);
 Route::resource('orders', OrderController::class);
+
+Route::middleware('auth')->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+});
 
 // Admin-protected routes example
 Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {

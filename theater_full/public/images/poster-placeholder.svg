@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900" role="img" aria-label="Постер отсутствует">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f1720"/>
+      <stop offset="100%" stop-color="#0b0f14"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="900" fill="url(#bg)"/>
+  <rect x="36" y="36" width="528" height="828" rx="24" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+
+  <g fill="rgba(255,255,255,0.85)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif" text-anchor="middle">
+    <text x="300" y="420" font-size="28" font-weight="700">Постер</text>
+    <text x="300" y="460" font-size="18" fill="rgba(255,255,255,0.7)">не загружен</text>
+  </g>
+
+  <g fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="3">
+    <path d="M210 560c0-50 40-90 90-90s90 40 90 90"/>
+    <circle cx="250" cy="560" r="6" fill="rgba(255,255,255,0.35)" stroke="none"/>
+    <circle cx="350" cy="560" r="6" fill="rgba(255,255,255,0.35)" stroke="none"/>
+  </g>
+</svg>

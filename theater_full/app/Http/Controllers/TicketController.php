@@ -6,11 +6,19 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreTicketRequest;
 use App\Models\PriceTier;
-use App\Models\PerformanceStat;
-use Illuminate\Support\Carbon;
+use App\Services\PerformanceStatsUpdater;
+use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
 {
+    public function __construct()
+    {
+        // Ticket purchase requires login.
+        $this->middleware('auth');
+        // Listing all tickets is admin-only.
+        $this->middleware('admin')->only(['index']);
+    }
+
     public function index(Request $request)
     {
         $tickets = Ticket::with(['performance','seat'])->paginate(30);
@@ -25,6 +33,13 @@ class TicketController extends Controller
     public function store(StoreTicketRequest $request)
     {
         $data = $request->validated();
+
+        $user = $request->user();
+        if (!$user?->is_admin) {
+            // bind ticket to the purchaser
+            $data['purchaser_id'] = $user->id;
+        }
+
         // if a price_tier_id was provided, resolve its price
         if (isset($data['price_tier_id'])) {
             $tier = PriceTier::find($data['price_tier_id']);
@@ -39,24 +54,43 @@ class TicketController extends Controller
         }
 
         $ticket = Ticket::create($data);
-        $this->updatePerformanceStats($ticket, null);
+
+        app(PerformanceStatsUpdater::class)->update($ticket, null);
         return redirect()->route('tickets.show', $ticket);
     }
 
     public function show(Ticket $ticket)
     {
+        $this->authorizeTicketAccess($ticket);
         return view('tickets.show', compact('ticket'));
     }
 
     public function edit(Ticket $ticket)
     {
+        $this->authorizeTicketAccess($ticket);
         return view('tickets.edit', compact('ticket'));
     }
 
     public function update(StoreTicketRequest $request, Ticket $ticket)
     {
+        $this->authorizeTicketAccess($ticket);
+
         $original = $ticket->replicate();
         $data = $request->validated();
+
+        $user = $request->user();
+        if (!$user?->is_admin) {
+            // prevent tampering
+            $data['purchaser_id'] = $user->id;
+            // order_id can only be set to user's own order
+            if (isset($data['order_id'])) {
+                $order = \App\Models\Order::find($data['order_id']);
+                if (!$order || (int) $order->user_id !== (int) $user->id) {
+                    unset($data['order_id']);
+                }
+            }
+        }
+
         // if price_tier_id provided during update, resolve price
         if (isset($data['price_tier_id'])) {
             $tier = PriceTier::find($data['price_tier_id']);
@@ -70,94 +104,36 @@ class TicketController extends Controller
         }
 
         $ticket->update($data);
-        $this->updatePerformanceStats($ticket, $original);
+        app(PerformanceStatsUpdater::class)->update($ticket, $original);
         return redirect()->route('tickets.show', $ticket);
     }
 
     public function destroy(Ticket $ticket)
     {
+        $this->authorizeTicketAccess($ticket);
         $ticket->delete();
-        return redirect()->route('tickets.index');
+        // For regular users, redirect to cart; for admins, to the tickets list.
+        return Auth::user()?->is_admin
+            ? redirect()->route('tickets.index')
+            : redirect()->route('cart.index');
     }
 
-    private function updatePerformanceStats(Ticket $ticket, ?Ticket $original): void
+    private function authorizeTicketAccess(Ticket $ticket): void
     {
-        $today = Carbon::today();
+        $user = Auth::user();
+        if (!$user) {
+            abort(403);
+        }
 
-        $newPerformanceId = $ticket->performance_id;
-        $oldPerformanceId = $original?->performance_id;
-
-        $newStatus = $ticket->status;
-        $oldStatus = $original?->status;
-
-        $newCheckedIn = $ticket->checked_in_at;
-        $oldCheckedIn = $original?->checked_in_at;
-
-        $newPrice = (float) ($ticket->price ?? 0);
-        $oldPrice = (float) ($original?->price ?? 0);
-
-        // Handle status transitions affecting sold count and revenue
-        if ($original === null) {
-            if ($newStatus === 'sold') {
-                $this->applyStatsDelta($newPerformanceId, $today, 1, $newPrice, 0);
-            }
-            if (!empty($newCheckedIn)) {
-                $this->applyStatsDelta($newPerformanceId, $today, 0, 0, 1);
-            }
+        if ($user->is_admin) {
             return;
         }
 
-        // Performance changed: remove from old, add to new
-        if ($oldPerformanceId && $newPerformanceId && $oldPerformanceId !== $newPerformanceId) {
-            if ($oldStatus === 'sold') {
-                $this->applyStatsDelta($oldPerformanceId, $today, -1, -$oldPrice, $oldCheckedIn ? -1 : 0);
-            }
-            if ($newStatus === 'sold') {
-                $this->applyStatsDelta($newPerformanceId, $today, 1, $newPrice, $newCheckedIn ? 1 : 0);
-            }
-            return;
+        $ownsByPurchaser = (int) ($ticket->purchaser_id ?? 0) === (int) $user->id;
+        $ownsByOrder = $ticket->order && (int) ($ticket->order->user_id ?? 0) === (int) $user->id;
+
+        if (!$ownsByPurchaser && !$ownsByOrder) {
+            abort(403);
         }
-
-        // Same performance: handle sold status change
-        if ($oldStatus !== $newStatus) {
-            if ($oldStatus === 'sold' && $newStatus !== 'sold') {
-                $this->applyStatsDelta($newPerformanceId, $today, -1, -$oldPrice, 0);
-            }
-            if ($oldStatus !== 'sold' && $newStatus === 'sold') {
-                $this->applyStatsDelta($newPerformanceId, $today, 1, $newPrice, 0);
-            }
-        }
-
-        // If sold and price changed, adjust revenue
-        if ($newStatus === 'sold' && $newPrice !== $oldPrice) {
-            $this->applyStatsDelta($newPerformanceId, $today, 0, $newPrice - $oldPrice, 0);
-        }
-
-        // checked-in transitions
-        if (empty($oldCheckedIn) && !empty($newCheckedIn)) {
-            $this->applyStatsDelta($newPerformanceId, $today, 0, 0, 1);
-        } elseif (!empty($oldCheckedIn) && empty($newCheckedIn)) {
-            $this->applyStatsDelta($newPerformanceId, $today, 0, 0, -1);
-        }
-    }
-
-    private function applyStatsDelta(int $performanceId, Carbon $date, int $soldDelta, float $revenueDelta, int $checkedInDelta): void
-    {
-        $stat = PerformanceStat::firstOrCreate(
-            [
-                'performance_id' => $performanceId,
-                'date_calculated' => $date,
-            ],
-            [
-                'tickets_sold' => 0,
-                'revenue' => 0,
-                'checked_in_count' => 0,
-            ]
-        );
-
-        $stat->tickets_sold += $soldDelta;
-        $stat->revenue = (float) $stat->revenue + $revenueDelta;
-        $stat->checked_in_count += $checkedInDelta;
-        $stat->save();
     }
 }

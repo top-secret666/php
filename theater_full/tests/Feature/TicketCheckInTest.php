@@ -16,6 +16,7 @@ class TicketCheckInTest extends TestCase
         $user = User::factory()->create();
         $ticket = Ticket::factory()->create([
             'status' => 'sold',
+            'purchaser_id' => $user->id,
         ]);
 
         $checkedInAt = Carbon::now();

@@ -5,7 +5,9 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="h4">Афиша спектаклей</h2>
-        <a href="{{ route('shows.create') }}" class="btn btn-outline-light">Добавить спектакль</a>
+        @if(auth()->check() && auth()->user()->is_admin)
+            <a href="{{ route('shows.create') }}" class="btn btn-outline-light">Добавить спектакль</a>
+        @endif
     </div>
 
     <form method="GET" action="{{ route('shows.search') }}" class="row g-2 align-items-end mb-4">
@@ -61,10 +63,15 @@
             <div class="col-6 col-md-4 col-lg-3">
                 <a href="{{ route('shows.show', $show) }}" class="card-link">
                     <div class="card show-card h-100 text-white">
-                        <img src="{{ $show->poster_url ?? '/images/poster-placeholder.jpg' }}" class="card-img-top poster" alt="{{ $show->title }}">
+                        <img
+                            src="{{ $show->poster_url ?: asset('images/poster-placeholder.svg') }}"
+                            onerror="this.onerror=null;this.src='{{ asset('images/poster-placeholder.svg') }}';"
+                            class="card-img-top poster"
+                            alt="{{ $show->title }}"
+                        >
                         <div class="card-body">
                             <h5 class="card-title">{{ $show->title }}</h5>
-                            <p class="card-text text-muted small">{{ Str::limit($show->description, 80) }}</p>
+                            <p class="card-text text-muted small">{{ \Illuminate\Support\Str::limit((string) $show->description, 80) }}</p>
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <span class="badge badge-accent">{{ $show->duration_minutes }} мин</span>
                                 <small class="text-muted">{{ $show->venue->name ?? '—' }}</small>

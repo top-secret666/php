@@ -35,6 +35,7 @@ class ShowsCrudTest extends TestCase
             'name' => 'Creator',
             'email' => 'creator+' . time() . '@example.test',
             'password' => Hash::make('password'),
+            'is_admin' => true,
         ]);
 
         $venue = Venue::first();
@@ -59,6 +60,7 @@ class ShowsCrudTest extends TestCase
             'name' => 'Editor',
             'email' => 'editor+' . time() . '@example.test',
             'password' => Hash::make('password'),
+            'is_admin' => true,
         ]);
 
         $show = Show::first();
@@ -87,6 +89,7 @@ class ShowsCrudTest extends TestCase
             'name' => 'Remover',
             'email' => 'remover+' . time() . '@example.test',
             'password' => Hash::make('password'),
+            'is_admin' => true,
         ]);
 
         $show = Show::create([

@@ -4,10 +4,11 @@
 
 @section('content')
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-6 col-lg-5">
             <div class="card bg-dark text-light">
                 <div class="card-body">
-                    <h3 class="mb-3">Регистрация</h3>
+                    <h3 class="mb-1">Регистрация</h3>
+                    <div class="text-muted mb-3">Создайте аккаунт, чтобы управлять театром.</div>
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
@@ -34,7 +35,11 @@
                             <input id="password_confirmation" type="password" class="form-control" name="password_confirmation" required>
                         </div>
 
-                        <button type="submit" class="btn badge-accent text-white">Зарегистрироваться</button>
+                        <button type="submit" class="btn btn-accent">Зарегистрироваться</button>
+
+                        <div class="text-muted small mt-3">
+                            Уже есть аккаунт? <a href="{{ route('login') }}" class="text-white">Войдите</a>.
+                        </div>
                     </form>
                 </div>
             </div>

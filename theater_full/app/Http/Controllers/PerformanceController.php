@@ -8,6 +8,14 @@ use App\Http\Requests\StorePerformanceRequest;
 
 class PerformanceController extends Controller
 {
+    public function __construct()
+    {
+        // allow everyone to browse schedule
+        // require auth+admin for creating/updating/deleting
+        $this->middleware('auth')->except(['index', 'show']);
+        $this->middleware('admin')->except(['index', 'show']);
+    }
+
     public function index(Request $request)
     {
         $performances = Performance::with('show')->paginate(20);

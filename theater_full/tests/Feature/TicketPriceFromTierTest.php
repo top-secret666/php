@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\{Performance, Seat, PriceTier, Ticket};
+use App\Models\{Performance, Seat, PriceTier, Ticket, User};
 
 class TicketPriceFromTierTest extends TestCase
 {
@@ -12,13 +12,14 @@ class TicketPriceFromTierTest extends TestCase
 
     public function test_ticket_price_is_set_from_price_tier()
     {
+        $user = User::factory()->create();
         $performance = Performance::factory()->create();
         $seat = Seat::factory()->create();
         $tier = PriceTier::factory()->create([
             'amount_cents' => 1234,
         ]);
 
-        $response = $this->post(route('tickets.store'), [
+        $response = $this->actingAs($user)->post(route('tickets.store'), [
             'performance_id' => $performance->id,
             'seat_id' => $seat->id,
             'price_tier_id' => $tier->id,

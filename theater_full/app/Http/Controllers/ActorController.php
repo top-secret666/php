@@ -11,8 +11,10 @@ class ActorController extends Controller
 {
     public function __construct()
     {
-        // allow guests to view index/show, require auth for creating/updating/deleting
+        // allow guests to view index/show
+        // require auth+admin for creating/updating/deleting
         $this->middleware('auth')->except(['index', 'show']);
+        $this->middleware('admin')->except(['index', 'show']);
     }
 
     public function index(Request $request)
