@@ -536,6 +536,7 @@ $show = Show::create($request->validated());
 | Миграции для таблиц | `theater_full/database/migrations/*` (создание `shows`, `performances`, `tickets`, `orders` и др.). |
 | Отношения Eloquent | `theater_full/app/Models/*.php` (`hasMany`, `belongsTo`, `belongsToMany`). |
 | Resource‑контроллеры | `Route::resource(...)` в `theater_full/routes/web.php` для шоу/сеансов/билетов/заказов. |
+| CRUD для актёров | `ActorController` + `Route::resource('actors', ...)` + шаблоны `resources/views/actors/*`. Роль и спектакль хранятся в pivot `actor_show.character_name`. |
 | Доп. контроллеры/логика | `TicketController` — продажа/QR/статусы, статистика; `AdminMiddleware` — доступ администратора. |
 | Представления CRUD | `theater_full/resources/views/*` (например, `shows/*`, `orders/*`, `tickets/*`). |
 | Макет (layout) | `theater_full/resources/views/layouts/app.blade.php`. |
@@ -548,6 +549,7 @@ $show = Show::create($request->validated());
 | Пагинация | `paginate(15)` в контроллерах и `{{ $paginator->links() }}` во view (например, афиша). |
 | Аутентификация | Логин/регистрация (контроллеры в `theater_full/app/Http/Controllers/Auth/*`, маршруты в `theater_full/routes/web.php`). |
 | Авторизация/разграничение | `AdminMiddleware` + защищённые маршруты `admin/*`. |
+| Статистика посещаемости | `admin/stats` — просмотр агрегатов из `performance_stats` (продано/проверено/выручка). |
 | Загрузка файлов | Постер спектакля: формы `shows/create|edit` + обработка в `ShowController` (сохранение в `public` disk). |
 
 ### Поиск, фильтрация, сортировка и пагинация (афиша)
@@ -578,7 +580,10 @@ $show = Show::create($request->validated());
 - валидация: `app/Http/Requests/StoreShowRequest.php` (`poster` — `image|max:4096`);
 - обработка: `app/Http/Controllers/ShowController.php` (сохранение на диске `public`, запись URL в поле `poster_url`).
 
-**Примечание:** для раздачи файлов используется `Storage::url(...)`, а в production обычно настраивается симлинк `storage -> public/storage`.
+**Примечание:** для раздачи файлов используется `Storage::url(...)`. Для локальной разработки требуется создать публичную ссылку на каталог хранения:
+
+- выполнить `php artisan storage:link`;
+- после этого файлы, сохранённые в `storage/app/public`, будут доступны через `/storage/...`.
 
 ### Использование коллекций (Collections)
 

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ShowController;
+use App\Http\Controllers\ActorController;
 use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\OrderController;
@@ -20,6 +21,8 @@ Route::get('/books/search', [BookController::class, 'search'])->name('books.sear
 Route::get('/shows/search', [ShowController::class, 'search'])->name('shows.search');
 Route::resource('shows', ShowController::class);
 
+Route::resource('actors', ActorController::class);
+
 Route::resource('performances', PerformanceController::class);
 Route::resource('tickets', TicketController::class);
 Route::resource('orders', OrderController::class);
@@ -29,6 +32,8 @@ Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->gr
     Route::get('dashboard', function () {
         return 'admin';
     })->name('dashboard');
+
+    Route::get('stats', [\App\Http\Controllers\Admin\StatsController::class, 'index'])->name('stats.index');
 });
 
 // Minimal authentication routes (simple login/register/logout) — replace full Auth::routes() for this dev scaffold
