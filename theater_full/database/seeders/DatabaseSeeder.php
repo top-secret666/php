@@ -15,6 +15,10 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\PriceTierSeeder::class,
             \Database\Seeders\ShowSeeder::class,
             \Database\Seeders\PerformanceSeeder::class,
+            \Database\Seeders\SampleDataSeeder::class,
+            \Database\Seeders\ActorSeeder::class,
+            \Database\Seeders\ReviewSeeder::class,
+            \Database\Seeders\PaymentSeeder::class,
         ]);
     }
 }

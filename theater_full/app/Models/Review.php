@@ -9,7 +9,7 @@ class Review extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id','show_id','performance_id','rating','title','body'];
+    protected $fillable = ['user_id','show_id','rating','comment'];
 
     public function user()
     {
@@ -21,8 +21,5 @@ class Review extends Model
         return $this->belongsTo(Show::class);
     }
 
-    public function performance()
-    {
-        return $this->belongsTo(Performance::class);
-    }
+    // reviews are tied to shows and users
 }

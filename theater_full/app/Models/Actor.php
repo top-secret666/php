@@ -9,7 +9,7 @@ class Actor extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['first_name', 'last_name', 'bio', 'birth_date'];
+    protected $fillable = ['full_name', 'bio', 'birth_date', 'photo_path'];
 
     protected $casts = [
         'birth_date' => 'date',
