@@ -14,8 +14,9 @@
 
             <ul class="navbar-nav ms-auto">
                 @guest
-                    <li class="nav-item"><a class="btn btn-outline-light me-2" href="{{ route('login') }}">Войти</a></li>
-                @else
+                        <li class="nav-item"><a class="btn btn-outline-light me-2" href="{{ route('login') }}">Войти</a></li>
+                        <li class="nav-item"><a class="btn btn-outline-light me-2" href="{{ route('register') }}">Регистрация</a></li>
+                    @else
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">{{ Auth::user()->name }}</a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
