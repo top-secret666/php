@@ -569,6 +569,17 @@ $show = Show::create($request->validated());
 - используется `paginate(15)` и `appends($request->query())`, чтобы параметры сохранялись при переходе по страницам;
 - поиск выполнен через `like` (совместимо с SQLite/MySQL/PostgreSQL), чтобы не зависеть от `ilike`.
 
+### Загрузка файлов (постер спектакля)
+
+Для предметной области театра логично хранить постер спектакля. В проекте реализована загрузка изображения с сохранением в файловое хранилище.
+
+**Где реализовано:**
+- формы: `resources/views/shows/create.blade.php`, `resources/views/shows/edit.blade.php` (`enctype="multipart/form-data"`, поле `poster`);
+- валидация: `app/Http/Requests/StoreShowRequest.php` (`poster` — `image|max:4096`);
+- обработка: `app/Http/Controllers/ShowController.php` (сохранение на диске `public`, запись URL в поле `poster_url`).
+
+**Примечание:** для раздачи файлов используется `Storage::url(...)`, а в production обычно настраивается симлинк `storage -> public/storage`.
+
 ## Тестирование и результаты
 
 **Подход:**
