@@ -25,9 +25,10 @@ Route::resource('tickets', TicketController::class);
 Route::resource('orders', OrderController::class);
 
 // Admin-protected routes example
-Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
-    // Example: admin area for managing venues (controller not generated here)
-    // Route::resource('venues', App\Http\Controllers\VenueController::class);
+Route::middleware([AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('dashboard', function () {
+        return 'admin';
+    })->name('dashboard');
 });
 
 // Minimal authentication routes (simple login/register/logout) — replace full Auth::routes() for this dev scaffold
