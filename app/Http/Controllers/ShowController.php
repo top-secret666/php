@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Show;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreShowRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ShowController extends Controller
 {
+    public function __construct()
+    {
+        // allow guests to view index/show/search, require auth for creating/updating/deleting
+        $this->middleware('auth')->except(['index', 'show', 'search']);
+        $this->authorizeResource(Show::class, 'show');
+    }
     public function index(Request $request)
     {
         $shows = Show::with('venue')->paginate(15);
