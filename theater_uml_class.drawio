@@ -29,7 +29,7 @@
           <mxGeometry height="24" width="200" y="158" as="geometry" />
         </mxCell>
         <mxCell id="class-actor" parent="1" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" value="Actor" vertex="1">
-          <mxGeometry height="110" width="200" x="400" y="60" as="geometry" />
+          <mxGeometry height="110" width="200" x="700" y="50" as="geometry" />
         </mxCell>
         <mxCell id="actor-separator" parent="class-actor" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" value="" vertex="1">
           <mxGeometry height="8" width="200" y="30" as="geometry" />
